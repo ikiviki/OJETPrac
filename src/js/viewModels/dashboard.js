@@ -15,17 +15,17 @@ define(['knockout', 'accUtils', 'jquery', 'ojs/ojarraydataprovider', 'ojs/ojlabe
 
 
 
-      // // PRAC 3
-      // // List view from local json
-      // var url = "js/store_data.json"; // link to local json file
-      // self.activityDataProvider = ko.observable();  // gets data for Activities list
+      // PRAC 3
+      // List view from local json
+      var url = "js/store_data.json"; // link to local json file
+      self.activityDataProvider = ko.observable();  // gets data for Activities list
 
-      // // Get Activities objects from file using jQuery method and a method to return a Promise
-      // $.getJSON(url).then(function (data) {
-      //   // Create variable for Activities list and populate using key attribute fetch
-      //   var activitiesArray = data;
-      //   self.activityDataProvider(new ArrayDataProvider(activitiesArray, { keyAttributes: 'id' }));
-      // });
+      // Get Activities objects from file using jQuery method and a method to return a Promise
+      $.getJSON(url).then(function (data) {
+        // Create variable for Activities list and populate using key attribute fetch
+        var activitiesArray = data;
+        self.activityDataProvider(new ArrayDataProvider(activitiesArray, { keyAttributes: 'id' }));
+      });
 
 
 
