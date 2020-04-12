@@ -12,11 +12,8 @@ define(
     'accUtils',
     'jquery',
     'ojs/ojarraydataprovider',
-    'ojs/ojhtmlutils',
-    'ojs/ojresponsiveutils',
-    'ojs/ojresponsiveknockoututils',
-    'ojs/ojlabel', 'ojs/ojselectsingle', 'ojs/ojchart', 'ojs/ojlistview', 'ojs/ojmodule-element'],
-  function (ko, accUtils, $, ArrayDataProvider, HtmlUtils, ResponsiveUtils, ResponsiveKnockoutUtils) {
+    'ojs/ojlabel', 'ojs/ojchart', 'ojs/ojlistview', 'ojs/ojmodule-element', 'ojs/ojavatar'],
+  function (ko, accUtils, $, ArrayDataProvider) {
 
     function DashboardViewModel() {
       var self = this;
@@ -25,111 +22,137 @@ define(
 
       // PRAC 3
       // List view from local json
-      var url = "js/store_data.json"; // link to local json file
+      var url = "js/store_data.json";               // link to local json file
       self.activityDataProvider = ko.observable();  // gets data for Activities list
+      self.itemsDataProvider = ko.observable();     // gets data for Items list
+      self.itemData = ko.observable('');              // holds data for Item details
+      self.pieSeriesValue = ko.observableArray([]);        // holds data for pie chart
 
       // Get Activities objects from file using jQuery method and a method to return a Promise
       $.getJSON(url).then(function (data) {
         // Create variable for Activities list and populate using key attribute fetch
         var activitiesArray = data;
         self.activityDataProvider(new ArrayDataProvider(activitiesArray, { keyAttributes: 'id' }));
+
+        // Create variable for Items list and populate list using key attribute fetch
+        var itemsArray = data[0].items;
+        self.itemsDataProvider(new ArrayDataProvider(itemsArray, { keyAttributes: 'id' }));
+
+        // Populate Items details using the first child item
+        self.itemData(data[0].items[0]);
+
+        // Create variable for Pie Chart series and populate observable
+        var pieSeries = [
+          { name: "Quantity in Stock", items: [self.itemData().quantity_instock] },
+          { name: "Quantity Shipped", items: [self.itemData().quantity_shipped] }
+        ];
+        self.pieSeriesValue(pieSeries);
       });
 
 
 
-      // PRAC 1
-      // Select Single (drop down)
-      var types = [
-        { value: 'pie', label: 'Pie' },
-        { value: 'bar', label: 'Bar' },
-        { value: 'line', label: 'Line' }
-      ];
-
-      self.chartTypes = new ArrayDataProvider(types, { keyAttributes: 'value' });
-
-      self.val = ko.observable('pie'); // Chart selection observable and default value
 
 
+      // DEFINE -> 'ojs/ojselectsingle'
+      // // PRAC 1
+      // // Select Single (drop down)
+      // var types = [
+      //   { value: 'pie', label: 'Pie' },
+      //   { value: 'bar', label: 'Bar' },
+      //   { value: 'line', label: 'Line' }
+      // ];
 
-      // PRAC 2
-      // Bar Chart
-      // self.stackValue = ko.observable('off');
-      // self.orientationValue = ko.observable('vertical');
-      var chartData = [
-        { "id": 0, "series": "Baseball", "group": "Group A", "value": 42 },
-        { "id": 1, "series": "Baseball", "group": "Group B", "value": 34 },
-        { "id": 2, "series": "Bicycling", "group": "Group A", "value": 55 },
-        { "id": 3, "series": "Bicycling", "group": "Group B", "value": 30 },
-        { "id": 4, "series": "Skiing", "group": "Group A", "value": 36 },
-        { "id": 5, "series": "Skiing", "group": "Group B", "value": 50 },
-        { "id": 6, "series": "Soccer", "group": "Group A", "value": 22 },
-        { "id": 7, "series": "Soccer", "group": "Group B", "value": 46 }
-      ];
+      // self.chartTypes = new ArrayDataProvider(types, { keyAttributes: 'value' });
 
-      self.chartDataProvider = new ArrayDataProvider(chartData, { keyAttributes: 'id' });
-
-
-      
-
-
-      /** 
-      * Define the oj-module inline template for Activity Items list
-      */
-      var lg_xl_view = '<h1><oj-label for="itemsList">Activity Items</oj-label></h1>' +
-        '<oj-list-view style="font-size: 18px">' +
-        '<ul>' +
-        '<li>' +
-        '<div class="oj-flex-item">' +
-        '<p>SureCatch Baseball Glove</p>' +
-        '<p>Western R16 Helmet</p>' +
-        '<p>Western C1 Helmet</p>' +
-        '<p>Western Bat</p>' +
-        '</div>' +
-        '</li>' +
-        '<li>' +
-        '<div class="oj-flex-item">' +
-        '<p>Air-Lift Tire Pump</p>' +
-        '<p>Intact Bike Helmet</p>' +
-        '<p>Nimbus Bike Tire</p>' +
-        '<p>Refill Water Bottle</p>' +
-        '<p>Swift Boys 21 Speed</p>' +
-        '</div>' +
-        '</li>' +
-        '</ul>' +
-        '</oj-list-view>';
-
-
-      //Display this content for small and medium screen sizes
-      var sm_md_view = '<div id="sm_md" style="background-color:lightcyan; padding: 10px; font-size: 10px">' +
-        '<h1><oj-label for="itemsList">Activity Details</oj-label></h1>' +
-        '<oj-list-view style="font-size: 18px">' +
-        '<ul>' +
-        '<li>' +
-        '<div class="oj-flex-item">' +
-        '<p>SureCatch Baseball Glove</p>' +
-        '<p>Western R16 Helmet</p>' +
-        '<p>Western C1 Helmet</p>' +
-        '<p>Western Bat</p>' +
-        '</div>' +
-        '</li>' +
-        '</ul>' +
-        '</oj-list-view>' +
-        '</div>';
+      // self.val = ko.observable('pie'); // Chart selection observable and default value
 
 
 
-      // Identify the screen size and display the content for that screen size
-      var lgQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.LG_UP);
+      // // PRAC 2
+      // // Bar Chart
+      // // self.stackValue = ko.observable('off');
+      // // self.orientationValue = ko.observable('vertical');
+      // var chartData = [
+      //   { "id": 0, "series": "Baseball", "group": "Group A", "value": 42 },
+      //   { "id": 1, "series": "Baseball", "group": "Group B", "value": 34 },
+      //   { "id": 2, "series": "Bicycling", "group": "Group A", "value": 55 },
+      //   { "id": 3, "series": "Bicycling", "group": "Group B", "value": 30 },
+      //   { "id": 4, "series": "Skiing", "group": "Group A", "value": 36 },
+      //   { "id": 5, "series": "Skiing", "group": "Group B", "value": 50 },
+      //   { "id": 6, "series": "Soccer", "group": "Group A", "value": 22 },
+      //   { "id": 7, "series": "Soccer", "group": "Group B", "value": 46 }
+      // ];
 
-      self.large = ResponsiveKnockoutUtils.createMediaQueryObservable(lgQuery);
-      self.moduleConfig = ko.pureComputed(function () {
-        var viewNodes = HtmlUtils.stringToNodeArray(self.large() ? lg_xl_view : sm_md_view);
-        return { view: viewNodes };
-      });
+      // self.chartDataProvider = new ArrayDataProvider(chartData, { keyAttributes: 'id' });
 
-      /** 
-      * End of oj-module code
-      */
+
+
+
+
+
+
+      // /** 
+      // * Define the oj-module inline template for Activity Items list
+      // */
+      // var lg_xl_view = '<h1><oj-label for="itemsList">Activity Items</oj-label></h1>' +
+      //   '<oj-list-view style="font-size: 18px">' +
+      //   '<ul>' +
+      //   '<li>' +
+      //   '<div class="oj-flex-item">' +
+      //   '<p>SureCatch Baseball Glove</p>' +
+      //   '<p>Western R16 Helmet</p>' +
+      //   '<p>Western C1 Helmet</p>' +
+      //   '<p>Western Bat</p>' +
+      //   '</div>' +
+      //   '</li>' +
+      //   '<li>' +
+      //   '<div class="oj-flex-item">' +
+      //   '<p>Air-Lift Tire Pump</p>' +
+      //   '<p>Intact Bike Helmet</p>' +
+      //   '<p>Nimbus Bike Tire</p>' +
+      //   '<p>Refill Water Bottle</p>' +
+      //   '<p>Swift Boys 21 Speed</p>' +
+      //   '</div>' +
+      //   '</li>' +
+      //   '</ul>' +
+      //   '</oj-list-view>';
+
+
+      // //Display this content for small and medium screen sizes
+      // var sm_md_view = '<div id="sm_md" style="background-color:lightcyan; padding: 10px; font-size: 10px">' +
+      //   '<h1><oj-label for="itemsList">Activity Details</oj-label></h1>' +
+      //   '<oj-list-view style="font-size: 18px">' +
+      //   '<ul>' +
+      //   '<li>' +
+      //   '<div class="oj-flex-item">' +
+      //   '<p>SureCatch Baseball Glove</p>' +
+      //   '<p>Western R16 Helmet</p>' +
+      //   '<p>Western C1 Helmet</p>' +
+      //   '<p>Western Bat</p>' +
+      //   '</div>' +
+      //   '</li>' +
+      //   '</ul>' +
+      //   '</oj-list-view>' +
+      //   '</div>';
+
+
+      // DEFINE ->
+      // 'ojs/ojhtmlutils',
+      // 'ojs/ojresponsiveutils',
+      // 'ojs/ojresponsiveknockoututils',
+
+      // // Identify the screen size and display the content for that screen size
+      // var lgQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.LG_UP);
+
+      // self.large = ResponsiveKnockoutUtils.createMediaQueryObservable(lgQuery);
+      // self.moduleConfig = ko.pureComputed(function () {
+      //   var viewNodes = HtmlUtils.stringToNodeArray(self.large() ? lg_xl_view : sm_md_view);
+      //   return { view: viewNodes };
+      // });
+
+      // /** 
+      // * End of oj-module code
+      // */
 
 
 
