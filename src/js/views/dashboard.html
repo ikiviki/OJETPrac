@@ -7,10 +7,10 @@
   <h1>Product Information</h1>
 
   <!-- The outer container contains all the panels in the applciation -->
-  <div class="oj-flex oj-flex-init oj-panel oj-panel-alt1">
+  <div class="oj-flex oj-flex-init">
 
     <!-- The Activities container displays the activities list -->
-    <div class="oj-flex-item oj-panel oj-panel-alt2 oj-sm-only-text-align-end oj-md-4 oj-sm-12">
+    <div class="oj-flex-item oj-sm-only-text-align-end oj-md-4 oj-sm-12">
       <h3>
         <oj-label for="activitiesList">Activities</oj-label>
       </h3>
@@ -26,10 +26,10 @@
     </div>
 
     <!-- The outer container surrounds the Item Details container -->
-    <div class="oj-flex oj-flex-item oj-panel oj-panel-alt3 oj-md-8 oj-sm-12">
+    <div class="oj-flex oj-flex-item oj-md-8 oj-sm-12">
 
       <!-- An empty container -->
-      <div class="oj-flex-item oj-panel oj-panel-alt4 oj-md-6 oj-sm-12">
+      <div class="oj-flex-item oj-md-6 oj-sm-12">
 
         <div id="container">
           <oj-module config='[[moduleConfig]]'></oj-module>
@@ -38,11 +38,11 @@
       </div>
 
       <!-- Item Details container displays a chart upon selection-->
-      <div class="oj-flex-item oj-panel oj-panel-alt5 oj-md-6 oj-sm-12">
+      <div class="oj-flex-item oj-md-6 oj-sm-12">
         <h3>
           <oj-label for="basicSelect">Item Details</oj-label>
         </h3>
-        <hr style="margin-top:12px;">
+        <hr style="margin-top:8px;">
         <oj-label for="basicSelect">Select Chart : </oj-label>
 
         <oj-select-single id="basicSelect" data="[[chartTypes]]" value="{{val}}">
